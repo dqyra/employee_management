@@ -1,4 +1,7 @@
 from sqlalchemy.orm import Session
+
+import schemas
+from auth import get_password_hash
 from src.models import Employee, Task
 from schemas import EmployeeCreate, TaskCreate, EmployeeUpdate, TaskUpdate
 from src import models
@@ -6,6 +9,9 @@ from src import models
 
 def get_employee(db: Session, employee_id: int):
     return db.query(Employee).filter(Employee.id == employee_id).first()
+
+def get_employee_by_email(db: Session, email: str):
+    return db.query(models.Employee).filter(models.Employee.email == email).first()
 
 
 def get_employees(db: Session):
@@ -16,13 +22,20 @@ def get_all_tasks(db: Session):
     return db.query(models.Task).all()
 
 
-def create_employee(db: Session, employee: EmployeeCreate):
-    db_employee = Employee(**employee.dict())
+def create_employee(db: Session, employee: schemas.EmployeeCreate):
+    hashed_password = get_password_hash(employee.password)
+    db_employee = models.Employee(
+        name=employee.name,
+        surname=employee.surname,
+        email=employee.email,
+        age=employee.age,
+        working_hours=employee.working_hours,
+        password=hashed_password
+    )
     db.add(db_employee)
     db.commit()
     db.refresh(db_employee)
     return db_employee
-
 
 def get_task(db: Session, task_id: int):
     return db.query(Task).filter(Task.id == task_id).first()

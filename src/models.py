@@ -7,6 +7,8 @@ class Employee(Base):
     __tablename__ = 'employees'
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
+    email = Column(String, index=True)
+    password = Column(String)
     surname = Column(String, index=True)
     age = Column(Integer)
     working_hours = Column(Integer)
@@ -20,3 +22,7 @@ class Task(Base):
     description = Column(String, index=True)
     employee_id = Column(Integer, ForeignKey('employees.id'))
     employee = relationship("Employee", back_populates="tasks")
+
+
+
+
